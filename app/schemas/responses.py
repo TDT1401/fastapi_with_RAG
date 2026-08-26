@@ -1,3 +1,5 @@
+from typing import Literal
+
 from pydantic import BaseModel, ConfigDict, EmailStr
 
 
@@ -27,3 +29,12 @@ class ChatResponse(BaseResponse):
 class UploadResponse(BaseResponse):
     message: str
     selector_choices: str | None = None
+
+
+class DocumentChoiceResponse(BaseResponse):
+    selector_choices: str
+    reasoning_type: Literal["wp", "pdf", "md"]
+
+
+class DocumentListResponse(BaseResponse):
+    documents: list[DocumentChoiceResponse]

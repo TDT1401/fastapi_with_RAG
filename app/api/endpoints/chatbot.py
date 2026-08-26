@@ -1,33 +1,27 @@
 import os
-import secrets
 from urllib.parse import urlparse
 
 from fastapi import APIRouter, status
 
 from app.schemas.requests import ChatRequest, UploadRequest
-from app.schemas.responses import ChatResponse, UploadResponse
+from app.schemas.responses import (
+    ChatResponse,
+    DocumentChoiceResponse,
+    DocumentListResponse,
+    UploadResponse,
+)
 from app.services.rag_chain import build_rag_chain
 from app.services.vector_handler import (
     create_vector_store_md,
     create_vector_store_pdf,
     create_vector_store_wp,
 )
+from app.utils.document_index import generate_website_id, list_document_choices
 from app.utils.process import generate_conversation_id
 from app.utils.save_history import load_chat_history, save_chat_history
 
-PERSISTENT_DIRECTORY = os.path.join("db")
-
 
 router = APIRouter()
-
-
-def generate_website_id(website_name: str) -> str:
-    """Return an unused website index ID with a five-digit random suffix."""
-    while True:
-        website_id = f"{website_name}_{secrets.randbelow(90000) + 10000}"
-        db_path = os.path.join("db", "chroma_db_wp_ollama", website_id)
-        if not os.path.exists(db_path):
-            return website_id
 
 
 @router.post(
@@ -74,6 +68,24 @@ async def chatbot_reply(data: ChatRequest) -> ChatResponse:
         answer=result,
         history=chat_history_for_response,
         conversation_id=conversation_id,
+    )
+
+
+@router.get(
+    "/documents",
+    response_model=DocumentListResponse,
+    status_code=status.HTTP_200_OK,
+    description="List indexed documents available for chatbot queries.",
+)
+async def get_documents() -> DocumentListResponse:
+    return DocumentListResponse(
+        documents=[
+            DocumentChoiceResponse(
+                selector_choices=selector_choices,
+                reasoning_type=reasoning_type,
+            )
+            for selector_choices, reasoning_type in list_document_choices()
+        ]
     )
 
 

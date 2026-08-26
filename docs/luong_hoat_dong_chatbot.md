@@ -45,12 +45,30 @@ Vì vậy, trước khi sử dụng cần Ollama đang chạy và đã có hai m
 | `POST /chatbot/upload/pdf` | Lập chỉ mục một file PDF ở máy/chứa ứng dụng. |
 | `POST /chatbot/upload/wp` | Lập chỉ mục nội dung của một URL web. |
 | `POST /chatbot/upload/md` | Lập chỉ mục một file Markdown ở máy/chứa ứng dụng. |
+| `GET /chatbot/documents` | Lấy danh sách các index tài liệu có thể chọn để chat. |
 | `POST /chatbot/chat` | Truy vấn một nguồn đã được lập chỉ mục. |
 
 Ba API `upload` nhận JSON theo schema `UploadRequest`:
 
 ```json
 { "file_path": "duong-dan-file-hoac-url" }
+```
+
+Để lấy các nguồn đã nạp cho `selector_choices`, gọi `GET /chatbot/documents`. Response gồm ID index và loại nguồn tương ứng:
+
+```json
+{
+  "documents": [
+    {
+      "selector_choices": "e_vnexpress_net_12345",
+      "reasoning_type": "wp"
+    },
+    {
+      "selector_choices": "bao-cao",
+      "reasoning_type": "pdf"
+    }
+  ]
+}
 ```
 
 Tên gọi “upload” ở đây không có nghĩa API nhận nội dung file qua `multipart/form-data`: với PDF/Markdown, `file_path` phải là đường dẫn mà tiến trình API có thể truy cập; với website, trường này là URL. API chỉ tạo index, không sao chép file vào project.
@@ -212,6 +230,7 @@ Tệp lịch sử là một file JSON tương đối theo thư mục chạy ứn
 | `app/schemas/requests.py` | Kiểm tra dữ liệu request (`ChatRequest`, `UploadRequest`). |
 | `app/schemas/responses.py` | Định dạng response (`ChatResponse`, `UploadResponse`). |
 | `app/utils/process.py` | Đọc PDF/web/Markdown, chia đoạn, sinh conversation ID. |
+| `app/utils/document_index.py` | Sinh ID website và liệt kê các index ChromaDB có thể chọn. |
 | `app/services/vector_handler.py` | Tạo/mở ChromaDB và tạo embedding qua Ollama. |
 | `app/services/rag_chain.py` | Truy xuất context, dựng prompt và gọi LLM. |
 | `app/utils/save_history.py` | Đọc/ghi `chat_store.json`. |
