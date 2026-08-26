@@ -1,4 +1,5 @@
 import os
+import secrets
 from urllib.parse import urlparse
 
 from fastapi import APIRouter, status
@@ -18,6 +19,15 @@ PERSISTENT_DIRECTORY = os.path.join("db")
 
 
 router = APIRouter()
+
+
+def generate_website_id(website_name: str) -> str:
+    """Return an unused website index ID with a five-digit random suffix."""
+    while True:
+        website_id = f"{website_name}_{secrets.randbelow(90000) + 10000}"
+        db_path = os.path.join("db", "chroma_db_wp_ollama", website_id)
+        if not os.path.exists(db_path):
+            return website_id
 
 
 @router.post(
@@ -79,9 +89,12 @@ async def upload_doc(data: UploadRequest) -> UploadResponse:
         db_path = os.path.join("db", "chroma_db_pdf_ollama", file_id)
         status = create_vector_store_pdf(data.file_path, db_path)
         print(f"Status: {status}")
-        return UploadResponse(message=status)
+        return UploadResponse(
+            message=status,
+            selector_choices=file_id if status != "Error creating vector store." else None,
+        )
     except Exception:
-        return UploadResponse(message=status)
+        return UploadResponse(message="Error creating vector store.")
 
 
 @router.post(
@@ -94,13 +107,19 @@ async def upload_website(data: UploadRequest) -> UploadResponse:
     try:
         parsed_url = urlparse(data.file_path)
         website_name = parsed_url.netloc.replace("www.", "").replace(".", "_")
+        website_id = generate_website_id(website_name)
 
-        db_path = os.path.join("db", "chroma_db_wp_ollama", website_name)
+        db_path = os.path.join("db", "chroma_db_wp_ollama", website_id)
         status = create_vector_store_wp(data.file_path, db_path)
         print(f"Status: {status}")
-        return UploadResponse(message=status)
+        return UploadResponse(
+            message=status,
+            selector_choices=(
+                website_id if status != "Error creating vector store." else None
+            ),
+        )
     except Exception:
-        return UploadResponse(message=status)
+        return UploadResponse(message="Error creating vector store.")
 
 
 @router.post(
@@ -115,6 +134,13 @@ async def upload_markdown(data: UploadRequest) -> UploadResponse:
         db_path = os.path.join("db", "chroma_db_md_ollama", file_id)
         upload_status = create_vector_store_md(data.file_path, db_path)
         print(f"Status: {upload_status}")
-        return UploadResponse(message=upload_status)
+        return UploadResponse(
+            message=upload_status,
+            selector_choices=(
+                file_id
+                if upload_status != "Error creating vector store."
+                else None
+            ),
+        )
     except Exception:
         return UploadResponse(message="Error creating vector store.")

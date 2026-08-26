@@ -26,3 +26,4 @@ class ChatResponse(BaseResponse):
 
 class UploadResponse(BaseResponse):
     message: str
+    selector_choices: str | None = None
