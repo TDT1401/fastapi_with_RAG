@@ -3,7 +3,14 @@ import os
 from langchain_community.vectorstores import Chroma
 from langchain_ollama import OllamaEmbeddings
 
-from app.utils.process import pdf_chunk, pdf_extract, wp_chunk, wp_text
+from app.utils.process import (
+    md_chunk,
+    md_extract,
+    pdf_chunk,
+    pdf_extract,
+    wp_chunk,
+    wp_text,
+)
 
 EMBEDDING_MODEL = "nomic-embed-text"
 
@@ -49,6 +56,25 @@ def create_vector_store_wp(file_path: str, db_path: str) -> str:
             return "Document already exists."
     except Exception as e:
         print(f"Error in create_vector_store_if_needed: {e}")
+        return "Error creating vector store."
+
+
+def create_vector_store_md(file_path: str, db_path: str) -> str:
+    print(
+        "Creating a new vector store from Markdown =======================+>>>>>>>>>>>>"
+    )
+    try:
+        if not os.path.exists(db_path):
+            text = md_extract(file_path)
+            chunks = md_chunk(text)
+            embedding_model = get_embedding_model()
+            Chroma.from_documents(
+                documents=chunks, embedding=embedding_model, persist_directory=db_path
+            )
+            return "Document created successfully."
+        return "Document already exists."
+    except Exception as e:
+        print(f"Error in create_vector_store_md: {e}")
         return "Error creating vector store."
 
 

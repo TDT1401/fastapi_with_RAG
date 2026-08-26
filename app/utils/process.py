@@ -1,7 +1,7 @@
 from datetime import datetime
 
 from langchain.schema import Document
-from langchain_community.document_loaders import PyPDFLoader, WebBaseLoader
+from langchain_community.document_loaders import PyPDFLoader, TextLoader, WebBaseLoader
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 
 
@@ -42,6 +42,18 @@ def wp_chunk(webpage_text: list[Document]) -> list[Document]:
     print("Chunking web page text...")
     text_splitter = RecursiveCharacterTextSplitter(chunk_size=1000, chunk_overlap=100)
     return text_splitter.split_documents(webpage_text)
+
+
+def md_extract(markdown_path: str) -> list[Document]:
+    print("Markdown file text is extracted =============================+>>>>>>>>>>>>>")
+    loader = TextLoader(markdown_path, encoding="utf-8")
+    return loader.load()
+
+
+def md_chunk(markdown_text: list[Document]) -> list[Document]:
+    print("Markdown file text is chunked =============================+>>>>>>>>>>>>>>>")
+    text_splitter = RecursiveCharacterTextSplitter(chunk_size=1000, chunk_overlap=100)
+    return text_splitter.split_documents(markdown_text)
 
 
 def generate_conversation_id():

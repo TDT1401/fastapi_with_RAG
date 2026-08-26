@@ -25,7 +25,7 @@ class ChatRequest(BaseRequest):
     user_id: str
     chat_input: str
     selector_choices: str
-    reasoning_type: Literal["wp", "pdf"] = "wp"
+    reasoning_type: Literal["wp", "pdf", "md"] = "wp"
     conversation_id: str = None
 
 

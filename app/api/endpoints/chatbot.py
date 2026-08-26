@@ -6,7 +6,11 @@ from fastapi import APIRouter, status
 from app.schemas.requests import ChatRequest, UploadRequest
 from app.schemas.responses import ChatResponse, UploadResponse
 from app.services.rag_chain import build_rag_chain
-from app.services.vector_handler import create_vector_store_pdf, create_vector_store_wp
+from app.services.vector_handler import (
+    create_vector_store_md,
+    create_vector_store_pdf,
+    create_vector_store_wp,
+)
 from app.utils.process import generate_conversation_id
 from app.utils.save_history import load_chat_history, save_chat_history
 
@@ -97,3 +101,20 @@ async def upload_website(data: UploadRequest) -> UploadResponse:
         return UploadResponse(message=status)
     except Exception:
         return UploadResponse(message=status)
+
+
+@router.post(
+    "/upload/md",
+    response_model=UploadResponse,
+    status_code=status.HTTP_200_OK,
+    description="Upload a Markdown document to the chatbot.",
+)
+async def upload_markdown(data: UploadRequest) -> UploadResponse:
+    try:
+        file_id = os.path.splitext(os.path.basename(data.file_path))[0]
+        db_path = os.path.join("db", "chroma_db_md_ollama", file_id)
+        upload_status = create_vector_store_md(data.file_path, db_path)
+        print(f"Status: {upload_status}")
+        return UploadResponse(message=upload_status)
+    except Exception:
+        return UploadResponse(message="Error creating vector store.")
