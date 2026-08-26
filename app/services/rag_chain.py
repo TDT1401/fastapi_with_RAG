@@ -1,11 +1,11 @@
 from langchain.prompts import PromptTemplate
 from langchain_core.output_parsers import StrOutputParser
 from langchain_core.runnables import RunnableLambda
-from langchain_openai import ChatOpenAI
+from langchain_ollama import ChatOllama
 
 from .vector_handler import load_vector_store
 
-LLM_MODEL = "gpt-4o-mini"
+LLM_MODEL = "llama3.2"
 template = """ You are an AI model trained for question answering. You should answer the
 given question based on the given context only.
 
@@ -37,6 +37,6 @@ def get_context(inputs: dict[str, str]) -> dict[str, str]:
 
 
 def build_rag_chain():
-    llm = ChatOpenAI(model=LLM_MODEL)
+    llm = ChatOllama(model=LLM_MODEL)
     str_parser = StrOutputParser()
     return RunnableLambda(get_context) | RAG_PROMPT_PDF | llm | str_parser

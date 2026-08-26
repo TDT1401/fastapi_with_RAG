@@ -1,14 +1,14 @@
 # FastAPI with RAG
 
 Backend FastAPI bất đồng bộ, PostgreSQL, xác thực JWT và chatbot RAG sử dụng
-OpenAI cùng ChromaDB. Dự án dùng **Miniconda** để quản lý môi trường Python;
+Ollama cục bộ cùng ChromaDB. Dự án dùng **Miniconda** để quản lý môi trường Python;
 không cần Poetry.
 
 ## Yêu cầu
 
 - [Miniconda](https://docs.conda.io/projects/miniconda/en/latest/)
 - Docker Desktop (để chạy PostgreSQL)
-- OpenAI API key (để gọi các API chatbot/RAG)
+- [Ollama](https://ollama.com/) với hai model `llama3.2` và `nomic-embed-text`
 
 ## Cài đặt môi trường
 
@@ -48,7 +48,7 @@ python -m pip install -r requirements.txt
 Sau khi hoàn tất **một** cách cài đặt ở trên:
 
 ```powershell
-# 1. Tạo file cấu hình cục bộ và điền OPENAI_API_KEY của bạn
+# 1. Tạo file cấu hình cục bộ
 Copy-Item .env.example .env
 
 # 2. Khởi động PostgreSQL
@@ -69,9 +69,10 @@ Mở http://localhost:8000/ để dùng Swagger UI. Để dừng PostgreSQL, ch�
 
 ## Cấu hình môi trường
 
-File `.env` không được commit. Sao chép từ `.env.example`, sau đó thay giá trị
-`OPENAI_API_KEY` bằng API key thật. Các biến `DATABASE__*` phải khớp với cấu
-hình PostgreSQL Docker; mặc định database được mở tại `localhost:5455`.
+File `.env` không được commit. Sao chép từ `.env.example`. Ollama chạy cục bộ,
+không cần API key; hãy bảo đảm đã tải `llama3.2` và `nomic-embed-text`. Các biến
+`DATABASE__*` phải khớp với cấu hình PostgreSQL Docker; mặc định database được mở
+tại `localhost:5455`.
 
 ## Lệnh phát triển
 

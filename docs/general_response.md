@@ -18,7 +18,7 @@ The chatbot generates an answer by following these steps:
      - **Prompt Template**:
        - A predefined prompt (`RAG_PROMPT_PDF`) is used to structure the input for the language model.
      - **Language Model**:
-       - The `ChatOpenAI` model processes the input and generates a response.
+       - The `ChatOllama` model processes the input and generates a response.
      - **Output Parsing**:
        - The response is parsed into a string format using `StrOutputParser`.
 
@@ -56,7 +56,7 @@ The chatbot generates an answer by following these steps:
      - **Prompt Template**:
        - A predefined prompt (`RAG_PROMPT_PDF`) is used to structure the input for the language model.
      - **Language Model**:
-       - The `ChatOpenAI` model processes the input and generates a response.
+       - The `ChatOllama` model processes the input and generates a response.
      - **Output Parsing**:
        - The response is parsed into a string format using `StrOutputParser`.
 

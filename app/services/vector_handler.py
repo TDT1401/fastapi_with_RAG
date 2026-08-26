@@ -1,11 +1,15 @@
 import os
 
-from langchain.vectorstores import Chroma
-from langchain_openai import OpenAIEmbeddings
+from langchain_community.vectorstores import Chroma
+from langchain_ollama import OllamaEmbeddings
 
 from app.utils.process import pdf_chunk, pdf_extract, wp_chunk, wp_text
 
-EMBEDDING_MODEL = "text-embedding-3-small"
+EMBEDDING_MODEL = "nomic-embed-text"
+
+
+def get_embedding_model() -> OllamaEmbeddings:
+    return OllamaEmbeddings(model=EMBEDDING_MODEL)
 
 
 def create_vector_store_pdf(file_path: str, db_path: str) -> str:
@@ -16,7 +20,7 @@ def create_vector_store_pdf(file_path: str, db_path: str) -> str:
         if not os.path.exists(db_path):
             text = pdf_extract(file_path)
             chunks = pdf_chunk(text)
-            embedding_model = OpenAIEmbeddings(model=EMBEDDING_MODEL)
+            embedding_model = get_embedding_model()
             Chroma.from_documents(
                 documents=chunks, embedding=embedding_model, persist_directory=db_path
             )
@@ -36,7 +40,7 @@ def create_vector_store_wp(file_path: str, db_path: str) -> str:
         if not os.path.exists(db_path):
             text = wp_text(file_path)
             chunks = wp_chunk(text)
-            embedding_model = OpenAIEmbeddings(model=EMBEDDING_MODEL)
+            embedding_model = get_embedding_model()
             Chroma.from_documents(
                 documents=chunks, embedding=embedding_model, persist_directory=db_path
             )
@@ -50,7 +54,7 @@ def create_vector_store_wp(file_path: str, db_path: str) -> str:
 
 def load_vector_store(selector_choices: str, reasoning_type: str) -> Chroma:
     print("Loading vector store =============================+>>>>>>>>>>>>>>>")
-    seletor = "chroma_db_" + reasoning_type
+    seletor = "chroma_db_" + reasoning_type + "_ollama"
     db_path = os.path.join("db", seletor, selector_choices)
-    embedding_model = OpenAIEmbeddings(model=EMBEDDING_MODEL)
+    embedding_model = get_embedding_model()
     return Chroma(persist_directory=db_path, embedding_function=embedding_model)

@@ -8,7 +8,7 @@
 - Gỡ toàn bộ metadata, dependency và build backend của Poetry khỏi
   `pyproject.toml`; file này chỉ còn cấu hình pytest, coverage, mypy và ruff.
 - Cập nhật `Dockerfile` để cài từ `requirements.txt`, không cài Poetry.
-- Thêm `OPENAI_API_KEY` vào `.env.example` và cập nhật README.
+- Cập nhật `.env.example` và README cho Ollama cục bộ.
 
 ## Cài đặt lần đầu: hai lựa chọn
 
@@ -37,7 +37,7 @@ Sau khi cài xong theo một trong hai cách, cấu hình và chạy ứng dụn
 
 ```powershell
 Copy-Item .env.example .env
-# Mở .env và thay OPENAI_API_KEY bằng API key của bạn.
+# Ollama chạy cục bộ, không cần API key.
 docker compose up -d
 alembic upgrade head
 uvicorn app.main:app --reload
