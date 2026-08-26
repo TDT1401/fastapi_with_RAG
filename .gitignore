@@ -7,7 +7,7 @@ db
 chat_store.json
 # C extensions
 *.so
-poetry.lock
+.conda/
 # Distribution / packaging
 .Python
 build/
